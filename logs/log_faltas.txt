@@ -1,0 +1,13 @@
+📋 FALTAS POR DISCIPLINA:
+- Disciplinas: Média Final faltas
+- Introdução à Cibersegurança: 0 faltas
+  🎉 Muito bem, 0 faltas! Continue assim.
+- Tópicos Avançados em Tecnologia: - faltas
+- Projeto de Desenvolvimento II: 0 faltas
+  🎉 Muito bem, 0 faltas! Continue assim.
+- Automação e Programabilidade em Redes: 0 faltas
+  🎉 Muito bem, 0 faltas! Continue assim.
+- Análise de Tráfego de Redes: 0 faltas
+  🎉 Muito bem, 0 faltas! Continue assim.
+- Laboratório de Fundamentos de Redes de Computadores: 4 faltas
+  🔔 Você está com 4 faltas. Lembre-se que o limite é 15 faltas. Não perca a linha faltando as suas aulas!
