@@ -34,6 +34,22 @@ A proposta é tornar esse acompanhamento mais prático, rápido e confiável, ge
         `erro.png` – se ocorrer algum erro durante a execução.
         - As imagens são armazenadas por padrão na subpasta capturas/.
 
+## 🛠️ Detalhes Técnicos
+O script foi desenvolvido em Python utilizando a biblioteca Selenium WebDriver, que permite controlar o navegador programaticamente. Optamos pelo modo ``headless``, que executa a automação sem abrir a interface visual do navegador, otimizando recursos e possibilitando rodar em servidores sem interface gráfica.
+
+Para garantir estabilidade em páginas com carregamento dinâmico, como o Portal do Aluno, utilizamos esperas explícitas (``WebDriverWait``), que aguardam até que os elementos estejam visíveis ou clicáveis antes de prosseguir com as ações. Isso evita erros comuns de sincronização.
+
+Um desafio técnico importante foi a seleção do semestre correto no boletim, que exigiu o uso do método ``scrollIntoView`` para garantir que o elemento da seta de seleção estivesse visível na tela.
+
+O código está organizado em funções para modularizar o fluxo da automação, incluindo:
+ - Carregamento seguro das credenciais via arquivo `.env`.
+ - Configuração e inicialização do driver.
+ - Login e navegação até o boletim.
+ - Extração e filtragem dos dados de faltas.
+ - Geração de logs e alertas baseados na quantidade de faltas.
+
+Além disso, o script conta com tratamento de exceções para capturar erros inesperados, salvar screenshots de erro para facilitar a depuração e garantir o encerramento adequado do driver para liberar recursos do sistema.
+
 ## 🧾 Requisitos
 1. Python 3.12 ou superior.
 
