@@ -7,42 +7,49 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
+# Carrega o CPF e a senha do arquivo .env
 def carregar_credenciais():
     load_dotenv()
     return os.getenv("CPF"), os.getenv("SENHA")
 
+# Configura o ChromeDriver com opções para rodar em modo headless (sem abrir o navegador)
 def configurar_driver():
     options = Options()
     # options.add_argument("--start-maximized") # roda o script maximizado
     options.add_argument("--headless")  # para rodar sem abrir o navegador
-    options.add_argument("--window-size=1920,1080")  # define tamanho da janela
+    options.add_argument("--window-size=1920,1080")  # define tamanho da janela virtual
     driver = webdriver.Chrome(options=options)
     wait = WebDriverWait(driver, 15)
     return driver, wait
 
+# Realiza o login no portal do aluno
 def fazer_login(driver, wait, cpf, senha):
     driver.get("https://apsweb.senacrs.com.br/modulos/aluno/login.php5?")
     wait.until(EC.element_to_be_clickable((By.ID, "usr-login"))).send_keys(cpf)
     wait.until(EC.element_to_be_clickable((By.ID, "usr-password"))).send_keys(senha)
     wait.until(EC.element_to_be_clickable((By.ID, "btnEntrar"))).click()
 
+    # Acessa o ambiente acadêmico após o login
     ambiente = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "bg-aluno")))
     driver.save_screenshot("capturas/1-logada-antes-ambiente.png")
     print("📸 Screenshot após login tirada: 1-logada-antes-ambiente.png")
 
     ambiente.click()
 
+# Acessa a página de boletim e seleciona o semestre atual
 def acessar_boletim(driver, wait):
-    time.sleep(3)
+    time.sleep(3) # tempo extra de espera para estabilidade
     try:
         link_boletim = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Boletim")))
     except:
+        # Caso não encontre o link direto, tenta buscar por parte do href
         print("Não encontrou link por texto 'Boletim', tentando buscar por href...")
         link_boletim = wait.until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@href, 'boletim')]")))
     link_boletim.click()
     print("📂 Acessando página do boletim...")
     time.sleep(5)
 
+    # Seleciona o semestre atual no dropdown
     seta = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "x-form-arrow-trigger")))
     driver.execute_script("arguments[0].scrollIntoView(true);", seta)
     time.sleep(1)
@@ -53,11 +60,11 @@ def acessar_boletim(driver, wait):
     )))
     opcao.click()
 
-    time.sleep(3)
-    time.sleep(10)
+    time.sleep(12) # tempo para carregar todos os dados
     driver.save_screenshot("capturas/2-entrada-boletim.png")
     print("📸 Screenshot ao entrar no boletim tirada: 2-entrada-boletim.png")
 
+# Extrai as faltas por disciplina e salva em um txt de logs
 def extrair_faltas(driver):
     print("\n📋 FALTAS POR DISCIPLINA:")
     faltas_exibidas = set()
@@ -76,6 +83,7 @@ def extrair_faltas(driver):
                 if len(colunas) >= 4:
                     materia = colunas[0].text.strip()
                     faltas = colunas[3].text.strip()
+                        # Filtra entradas inválidas ou repetidas
                     if materia and materia.lower() not in ["disciplinas: média final faltas", "-", ""]:
                         if (materia, faltas) not in faltas_exibidas:
                             texto = f"- {materia}: {faltas} faltas"
@@ -84,6 +92,7 @@ def extrair_faltas(driver):
                             faltas_exibidas.add((materia, faltas))
                             gerar_aviso(arquivo_log, faltas)
 
+# Gera mensagens com base na quantidade de faltas
 def gerar_aviso(arquivo_log, faltas):
     try:
         faltas_num = int(faltas)
@@ -91,6 +100,7 @@ def gerar_aviso(arquivo_log, faltas):
         return
     limite = 15
     faltas_por_dia = 3
+    # Define mensagens diferentes conforme o nível de alerta
     if faltas_num == 0:
         aviso = "  🎉 Muito bem, 0 faltas! Continue assim."
     elif faltas_num >= limite:
@@ -102,6 +112,7 @@ def gerar_aviso(arquivo_log, faltas):
     print(aviso)
     arquivo_log.write(aviso + "\n")
 
+# Função principal que orquestra a execução do script
 def main():
     cpf, senha = carregar_credenciais()
     driver, wait = configurar_driver()
