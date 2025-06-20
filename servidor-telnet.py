@@ -2,12 +2,28 @@ import socket
 import subprocess
 import os
 from datetime import datetime
+import unicodedata
+import re
+
+# Função para limpar texto antes de enviar via Telnet, usando unicodedata e regex
+def limpar_texto_para_telnet(texto):
+    # Normaliza acentos e remove caracteres especiais
+    texto_sem_acentos = unicodedata.normalize('NFKD', texto).encode('ASCII', 'ignore').decode('ASCII')
+    
+    # Substitui múltiplas quebras de linha por apenas uma
+    texto_limpo = re.sub(r'\n+', '\n', texto_sem_acentos)
+    
+    # Remove qualquer caractere de controle não visível (exceto \n)
+    texto_limpo = re.sub(r'[^\x20-\x7E\n]', '', texto_limpo)
+
+    return texto_limpo.strip()
 
 # Função para enviar texto formatado corretamente para Telnet
 def enviar_mensagem(cliente, mensagem):
-    for linha in mensagem.splitlines():
+    texto_formatado = limpar_texto_para_telnet(mensagem)  # <<< limpeza aqui
+    for linha in texto_formatado.splitlines():
         cliente.sendall((linha + '\r\n').encode('utf-8', errors='replace'))
-    cliente.sendall(b'[FIM_DA_MENSAGEM]\r\n')  # Delimitador de fim de resposta
+    cliente.sendall(b'[FIM_DA_MENSAGEM]\r\n')
 
 # Criação do socket
 servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
