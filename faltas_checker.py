@@ -32,7 +32,7 @@ def fazer_login(driver, wait, cpf, senha):
     # Acessa o ambiente acadêmico após o login
     ambiente = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "bg-aluno")))
     driver.save_screenshot("capturas/1-logada-antes-ambiente.png")
-    print("📸 Screenshot após login tirada: 1-logada-antes-ambiente.png")
+    print(" Screenshot apas login tirada: 1-logada-antes-ambiente.png")
 
     ambiente.click()
 
@@ -43,10 +43,10 @@ def acessar_boletim(driver, wait):
         link_boletim = wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "Boletim")))
     except:
         # Caso não encontre o link direto, tenta buscar por parte do href
-        print("Não encontrou link por texto 'Boletim', tentando buscar por href...")
+        print("Nao encontrou link por texto 'Boletim', tentando buscar por href...")
         link_boletim = wait.until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@href, 'boletim')]")))
     link_boletim.click()
-    print("📂 Acessando página do boletim...")
+    print(" Acessando pagina do boletim...")
     time.sleep(5)
 
     # Seleciona o semestre atual no dropdown
@@ -62,11 +62,11 @@ def acessar_boletim(driver, wait):
 
     time.sleep(12) # tempo para carregar todos os dados
     driver.save_screenshot("capturas/2-entrada-boletim.png")
-    print("📸 Screenshot ao entrar no boletim tirada: 2-entrada-boletim.png")
+    print(" Screenshot ao entrar no boletim tirada: 2-entrada-boletim.png")
 
 # Extrai as faltas por disciplina e salva em um txt de logs
 def extrair_faltas(driver):
-    print("\n📋 FALTAS POR DISCIPLINA:")
+    print("\n FALTAS POR DISCIPLINA:")
     faltas_exibidas = set()
     tabelas = driver.find_elements(By.CLASS_NAME, "boletimTabelaNotas")
 
@@ -75,7 +75,7 @@ def extrair_faltas(driver):
 
     caminho_arquivo = os.path.join("logs", "log_faltas.txt")
     with open(caminho_arquivo, "w", encoding="utf-8") as arquivo_log:
-        arquivo_log.write("📋 FALTAS POR DISCIPLINA:\n")
+        arquivo_log.write(" FALTAS POR DISCIPLINA:\n")
         for tabela in tabelas:
             linhas = tabela.find_elements(By.TAG_NAME, "tr")
             for linha in linhas:
@@ -84,7 +84,7 @@ def extrair_faltas(driver):
                     materia = colunas[0].text.strip()
                     faltas = colunas[3].text.strip()
                         # Filtra entradas inválidas ou repetidas
-                    if materia and materia.lower() not in ["disciplinas: média final faltas", "-", ""]:
+                    if materia and materia.lower() not in ["disciplinas: media final faltas", "-", ""]:
                         if (materia, faltas) not in faltas_exibidas:
                             texto = f"- {materia}: {faltas} faltas"
                             print(texto)
@@ -102,13 +102,13 @@ def gerar_aviso(arquivo_log, faltas):
     faltas_por_dia = 3
     # Define mensagens diferentes conforme o nível de alerta
     if faltas_num == 0:
-        aviso = "  🎉 Muito bem, 0 faltas! Continue assim."
+        aviso = "   Muito bem, 0 faltas! Continue assim."
     elif faltas_num >= limite:
-        aviso = f"  ⚠️ Atenção: Você ultrapassou o limite de {limite} faltas nesta matéria!"
+        aviso = f"   Atencao: Voce ultrapassou o limite de {limite} faltas nesta materia!"
     elif faltas_num >= limite - faltas_por_dia:
-        aviso = f"  ⚠️ Cuidado: Você não pode mais faltar nenhum dia nesta matéria!"
+        aviso = f"   Cuidado: Voce nao pode mais faltar nenhum dia nesta materia!"
     else:
-        aviso = f"  🔔 Você está com {faltas_num} faltas. Lembre-se que o limite é {limite} faltas. Não perca a linha faltando as suas aulas!"
+        aviso = f"   Voce esta com {faltas_num} faltas. Lembre-se que o limite e {limite} faltas. Nao perca a linha faltando as suas aulas!"
     print(aviso)
     arquivo_log.write(aviso + "\n")
 
@@ -122,9 +122,9 @@ def main():
         acessar_boletim(driver, wait)
         extrair_faltas(driver)
     except Exception as e:
-        print(f"❌ Erro: {e}")
+        print(f" Erro: {e}")
         driver.save_screenshot("erro.png")
-        print("📸 Screenshot de erro tirada: erro.png")
+        print(" Screenshot de erro tirada: erro.png")
     finally:
         driver.quit()
 
