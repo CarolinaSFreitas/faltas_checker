@@ -27,7 +27,7 @@ def fazer_login(driver, wait, cpf, senha):
 
     ambiente = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "bg-aluno")))
     driver.save_screenshot("capturas/3-logada-antes-ambiente.png")
-    print("📸 Screenshot após login tirada: 3-logada-antes-ambiente.png")
+    print(" Screenshot apos login tirada: 3-logada-antes-ambiente.png")
     ambiente.click()
     time.sleep(5)
 
@@ -37,7 +37,7 @@ def acessar_situacao_curricular(driver, wait):
         (By.XPATH, "//a[contains(@href,'consultaHistorico.php5')]")
     ))
     link_situacao.click()
-    print("📂 Acessando Situação Curricular...")
+    print(" Acessando Situação Curricular...")
     time.sleep(5)
 def selecionar_curso_dropdown(driver, wait):
     # Espera e pega a seta (trigger) do dropdown pelo id ext-gen75
@@ -85,9 +85,9 @@ def main():
         selecionar_curso_dropdown(driver, wait)
         infos = extrair_informacoes(driver)
 
-        print("\n📋 Informações coletadas:")
+        print("\n Informacoes coletadas:")
         for k, v in infos.items():
-            print(f"{k}: {v if v else 'Não encontrado'}")
+            print(f"{k}: {v if v else 'Nao encontrado'}")
 
         carga_total = 1740  # horas totais do curso
         total_optativas_necessarias = 5
@@ -110,7 +110,7 @@ def main():
                 return int(numeros[0])
             return 0
 
-        horas_realizadas = extrair_horas(infos.get("Carga horária de atividades realizadas"))
+        horas_realizadas = extrair_horas(infos.get("Carga horaria de atividades realizadas"))
         disciplinas_total = extrair_numero(infos.get("Total de disciplinas do curso"))
         disciplinas_aprovadas = extrair_numero(infos.get("Total de disciplinas aprovadas"))
         optativas_aprovadas = extrair_numero(infos.get("Optativas aprovadas"))
@@ -123,42 +123,42 @@ def main():
         resultado = ""
 
         if horas_faltando > 0:
-            resultado += f"⏳ Faltam {horas_faltando} horas para você completar sua graduação! Se mantenha firme :)\n"
+            resultado += f" Faltam {horas_faltando} horas para voce completar sua graduacao! Se mantenha firme :)\n"
         else:
-            resultado += "🎉 Parabéns! Você já completou a carga horária do curso!\n"
+            resultado += " Parabens! Voce ja completou a carga horaria do curso!\n"
 
         if disciplinas_faltando > 0:
-            resultado += f"📚 Faltam {disciplinas_faltando} disciplinas para você concluir o curso.\n"
+            resultado += f" Faltam {disciplinas_faltando} disciplinas para voce concluir o curso.\n"
         else:
-            resultado += "🎉 Parabéns! Você já completou todas as disciplinas do curso!\n"
+            resultado += " Parabens! Voce ja completou todas as disciplinas do curso!\n"
 
         if optativas_faltando > 0:
-            resultado += f"✅ Você já aprovou {optativas_aprovadas} optativas. Faltam {optativas_faltando} optativas para completar as 5 necessárias para se formar.\n"
+            resultado += f" Voce ja aprovou {optativas_aprovadas} optativas. Faltam {optativas_faltando} optativas para completar as 5 necessarias para se formar.\n"
         else:
-            resultado += "🎉 Parabéns! Você já completou todas as optativas necessárias para a formação.\n"
+            resultado += " Parabens! Voce ja completou todas as optativas necessárias para a formacao.\n"
 
         print(resultado)
 
         # Salvar screenshot da página final
         driver.save_screenshot("capturas/4-situacao_curricular.png")
-        print("📸 Screenshot da situação curricular tirada: 4-situacao_curricular.png")
+        print(" Screenshot da situacao curricular tirada: 4-situacao_curricular.png")
 
         # Criar pasta de logs, se ainda não existir
         os.makedirs("logs", exist_ok=True)
 
         # Salvar resultado no log
         with open("logs/log_situacao.txt", "w", encoding="utf-8") as f:
-            f.write("📋 Informações coletadas:\n")
+            f.write(" Informacoes coletadas:\n")
             for k, v in infos.items():
-                f.write(f"{k}: {v if v else 'Não encontrado'}\n")
+                f.write(f"{k}: {v if v else 'Nao encontrado'}\n")
             f.write("\n" + resultado)
 
-        print("📄 Log salvo em logs/log_situacao.txt")
+        print(" Log salvo em logs/log_situacao.txt")
 
     except Exception as e:
-        print(f"❌ Erro: {e}")
+        print(f" Erro: {e}")
         driver.save_screenshot("erro.png")
-        print("📸 Screenshot de erro tirada: erro.png")
+        print(" Screenshot de erro tirada: erro.png")
     finally:
         driver.quit()
 
